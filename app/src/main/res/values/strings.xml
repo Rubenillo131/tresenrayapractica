@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">tresenrayapractica</string>
+    <string name="textView2">Tres en raya</string>
+    <string name="btnUnJugador">1 Jugador</string>
+    <string name="btnDosJugadores">2 Jugadores</string>
+    <string name="rbFacil">Fácil</string>
+    <string name="rbDificil">Difícil</string>
+    <string name="rbExtremo">Extremo</string>
+    <string name="button">Partidas</string>
+    <string name="button2" translatable="false">Ranking</string>
+</resources>

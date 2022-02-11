@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">tresenrayapractica</string>
+    <string name="textView2">Three in a row</string>
+    <string name="btnUnJugador">1 Player</string>
+    <string name="btnDosJugadores">2 Players</string>
+    <string name="rbFacil">Easy</string>
+    <string name="rbDificil">Hard</string>
+    <string name="rbExtremo">Insase</string>
+    <string name="button">Games</string>
+</resources>
