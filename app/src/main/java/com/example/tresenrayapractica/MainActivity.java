@@ -2,6 +2,7 @@ package com.example.tresenrayapractica;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -27,13 +28,15 @@ public class MainActivity extends AppCompatActivity {
     SQLiteHelper sql;
     SQLiteDatabase db;
 
+    ContentValues c ;
+    ContentValues r ;
+
+    int dificultad;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        sql = new SQLiteHelper(this);
-        db = sql.getWritableDatabase();
+        sql =  new SQLiteHelper(this);
 
         //Guardamos cada una de las casillas en el array
         casillas=new int[9];
@@ -54,7 +57,8 @@ public class MainActivity extends AppCompatActivity {
      * @param view
      */
     public void inicioJuego(View view) {
-
+        c = new ContentValues();
+        r = new ContentValues();
         ImageView imagen;
 
         //reseteamos el tablero
@@ -66,9 +70,13 @@ public class MainActivity extends AppCompatActivity {
 
         //determinamos qué botón se ha pulsado
         numJugadores = 1;
-
+        c.put("jugador1","usu1");
+        r.put("usuario","usu1");
         if(view.getId()==R.id.btnDosJugadores){
             numJugadores = 2;
+            c.put("jugador2","usu2");
+        }else{
+            c.put("jugador2","Maquina");
         }
 
         //comprobamos la dificultad elegida, 0:facil, 1:dificil, 2:extrema
@@ -76,12 +84,19 @@ public class MainActivity extends AppCompatActivity {
 
         int idDif=rgDificultad.getCheckedRadioButtonId();
 
-        int dificultad = 0;
-
-        if(idDif==R.id.rbDificil){
+        dificultad = 0;
+       if(idDif==R.id.rbDificil){
             dificultad=1;
+            c.put("dificultad","Dificil");
+            r.put("dificultad",1);
         }else if(idDif==R.id.rbExtremo){
             dificultad=2;
+            c.put("dificultad","Extremo");
+            r.put("dificultad",2);
+        }else{
+            dificultad=0;
+            c.put("dificultad","Facil");
+            r.put("dificultad",0);
         }
 
         //comenzamos la partida
@@ -181,19 +196,28 @@ public class MainActivity extends AppCompatActivity {
      * @param resultadoJuego
      */
     private void evaluarFinal(int resultadoJuego) {
-
         String mensaje;
 
         if (resultadoJuego==1){ //ha ganado el jugador 1
             mensaje="Jugador 1 ha ganado";
+            c.put("resultado","usu1");
+            r.put("puntos",dificultad);
         }else if (resultadoJuego==2){//ha ganado el jugador 2
             mensaje="Jugador 2 ha ganado";
-        } else mensaje="Empate";
+            c.put("resultado","usu2");
+        } else
+            mensaje="Empate";
+            c.put("resultado","empate");
 
         Toast.makeText(this,mensaje,Toast.LENGTH_SHORT).show();
 
         //finalizamos el juego
         partida=null;
+
+        db = sql.getWritableDatabase();
+        db.insert("jugadores",null,c);
+        db.insert("resultados",null,r);
+
         //volvemos a habilitar los controles para que se pueda volver a jugar
         (findViewById(R.id.btnUnJugador)).setEnabled(true);
         (findViewById(R.id.btnDosJugadores)).setEnabled(true);
@@ -205,15 +229,14 @@ public class MainActivity extends AppCompatActivity {
      * Método que dibujará la casilla con un círculo o con un aspa
      * @param casilla
      */
-    private void marcarCasilla(int casilla){
+    private void marcarCasilla(int casilla) {
         ImageView imagen;
-        imagen=findViewById(casillas[casilla]); //le asignamos el id de la imagen de la casilla correspondiente a la que hay que marcar
+        imagen = findViewById(casillas[casilla]); //le asignamos el id de la imagen de la casilla correspondiente a la que hay que marcar
 
-        if(partida.jugador==1){
+        if (partida.jugador == 1) {
             imagen.setImageResource(R.drawable.circulo); //si el jugador que está marcando es el 1 le asignamos el círculo a la casilla
-        }else{
+        } else {
             imagen.setImageResource(R.drawable.aspa); //si el jugadro es el 2 dibujamos un aspa
         }
-
     }
 }

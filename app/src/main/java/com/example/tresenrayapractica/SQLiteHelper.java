@@ -11,8 +11,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "Registros.db";
 
-    public static final String CREATE_TABLE1 = "CREATE TABLE IF NOT EXISTS jugadores(_id integer PRIMARY KEY, jugador1 text,jugador2 text, dificultad text, resultado text);";
-    public static final String CREATE_TABLE2 = "CREATE TABLE IF NOT EXISTS resultados(_id integer PRIMARY KEY, usuario text,partidas text, dificultad integer, puntos integer);";
+    public static final String CREATE_TABLE1 = "CREATE TABLE IF NOT EXISTS jugadores(jugador1 text,jugador2 text, dificultad text, resultado text);";
+    public static final String CREATE_TABLE2 = "CREATE TABLE IF NOT EXISTS resultados(usuario text,partidas text, dificultad integer, puntos integer);";
 
     public static final String DELETE_TABLE1 = "DROP TABLE IF EXISTS jugadores";
     public static final String DELETE_TABLE2 = "DROP TABLE IF EXISTS resultados";
