@@ -1,23 +1,32 @@
 package com.example.tresenrayapractica;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity {
-
+    private final int REQUEST_CODE_PERMISSIONS=1000;
     //botón que se ha pulsado (1 ó 2 jugadores)
     private int numJugadores;
     //array donde guardaremos las casillas del tablero
@@ -31,12 +40,26 @@ public class MainActivity extends AppCompatActivity {
     ContentValues c ;
     ContentValues r ;
 
+    ImageButton sonido;
+    MediaPlayer media1;
+    MediaPlayer media2;
+    MediaPlayer media3;
+
+
+
     int dificultad;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         sql =  new SQLiteHelper(this);
+
+        sonido = findViewById(R.id.btn_sonido);
+        media1= MediaPlayer.create(this,R.raw.elevator);
+        media2= MediaPlayer.create(this,R.raw.casilla);
+        media3= MediaPlayer.create(this,R.raw.aplauso);
+        media1.start();
+
 
         //Guardamos cada una de las casillas en el array
         casillas=new int[9];
@@ -52,6 +75,17 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    int estado = 0;
+    public void playpause(View view) {
+       if (estado == 0){
+           estado = 1;
+           media1.pause();
+       }else{
+           media1.start();
+           estado = 0;
+       }
+
+    }
     /***
      * Método asociado al evento onClick de los botones de 1 Jugador y 2 Jugadores
      * @param view
@@ -88,15 +122,15 @@ public class MainActivity extends AppCompatActivity {
        if(idDif==R.id.rbDificil){
             dificultad=1;
             c.put("dificultad","Dificil");
-            r.put("dificultad",1);
+            r.put("dificultad",2);
         }else if(idDif==R.id.rbExtremo){
             dificultad=2;
             c.put("dificultad","Extremo");
-            r.put("dificultad",2);
+            r.put("dificultad",3);
         }else{
             dificultad=0;
             c.put("dificultad","Facil");
-            r.put("dificultad",0);
+            r.put("dificultad",1);
         }
 
         //comenzamos la partida
@@ -198,19 +232,19 @@ public class MainActivity extends AppCompatActivity {
     private void evaluarFinal(int resultadoJuego) {
         String mensaje;
 
-        if (resultadoJuego==1){ //ha ganado el jugador 1
-            mensaje="Jugador 1 ha ganado";
-            c.put("resultado","usu1");
-            r.put("puntos",dificultad);
-        }else if (resultadoJuego==2){//ha ganado el jugador 2
-            mensaje="Jugador 2 ha ganado";
-            c.put("resultado","usu2");
-        } else
-            mensaje="Empate";
-            c.put("resultado","empate");
-
+        if (resultadoJuego == 1) { //ha ganado el jugador 1
+            mensaje = "Jugador 1 ha ganado";
+            c.put("resultado", "usu1");
+            r.put("puntos", dificultad);
+        } else if (resultadoJuego == 2) {//ha ganado el jugador 2
+            mensaje = "Jugador 2 ha ganado";
+            c.put("resultado", "usu2");
+        } else {
+            mensaje = "Empate";
+            c.put("resultado", "empate");
+        }
         Toast.makeText(this,mensaje,Toast.LENGTH_SHORT).show();
-
+        media3.start();
         //finalizamos el juego
         partida=null;
 
@@ -223,7 +257,7 @@ public class MainActivity extends AppCompatActivity {
         (findViewById(R.id.btnDosJugadores)).setEnabled(true);
         (findViewById(R.id.radioGroupDificultad)).setAlpha(1); //lo hacemos transparente
 
-    }
+        }
 
     /**
      * Método que dibujará la casilla con un círculo o con un aspa
@@ -232,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
     private void marcarCasilla(int casilla) {
         ImageView imagen;
         imagen = findViewById(casillas[casilla]); //le asignamos el id de la imagen de la casilla correspondiente a la que hay que marcar
-
+        media2.start();
         if (partida.jugador == 1) {
             imagen.setImageResource(R.drawable.circulo); //si el jugador que está marcando es el 1 le asignamos el círculo a la casilla
         } else {
